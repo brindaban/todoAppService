@@ -1,0 +1,9 @@
+package: todoApp/todoAppService
+import:
+- package: github.com/lib/pq
+  version: 4dd446efc17690bc53e154025146f73203b18309
+- package: github.com/stretchr/testify
+  subpackages:
+  - assert
+  - mock
+  - require
