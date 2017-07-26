@@ -5,11 +5,40 @@ import (
 	"os"
 	"net/http"
 	"io"
+	"todoApp/todoAppService/errorHandler"
+	"fmt"
+	"encoding/json"
 )
 
-func GetAllTodo(db *sql.DB, loggingFile *os.File) http.HandlerFunc{
-	return func(w http.ResponseWriter, r *http.Request) {
+const (
+	dbSelectQuery string = "select id,description,priority,finished from tasks;"
+)
 
+type TodoContent struct{
+	ID int
+	Description string
+	Priority string
+	Finished bool
+}
+
+func GetAllTodo(db *sql.DB, loggingFile *os.File) http.HandlerFunc{
+	return func(res http.ResponseWriter, req *http.Request) {
+		rows, err := db.Query(dbSelectQuery)
+		if err != nil {
+			errorHandler.ErrorHandler(loggingFile, err)
+		}
+
+		dbData := []TodoContent{}
+		if (rows != nil) {
+			for rows.Next() {
+				var r TodoContent
+				rows.Scan(&r.ID, &r.Description, &r.Priority,&r.Finished)
+				dbData = append(dbData, r)
+			}
+		}
+		fmt.Println(dbData,"Here I am")
+		data,_ := json.Marshal(dbData)
+		res.Write(data)
 	}
 }
 

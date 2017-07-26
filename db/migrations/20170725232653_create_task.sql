@@ -2,6 +2,7 @@
 -- +goose Up
 -- SQL in section 'Up' is executed when this migration is applied
 CREATE TABLE tasks (
+  id  SERIAL PRIMARY KEY,
   description   VARCHAR(255),
   priority      VARCHAR(255),
   finished      BOOLEAN

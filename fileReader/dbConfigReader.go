@@ -11,11 +11,10 @@ type JsonObject struct {
 	DB_USER     string
 	DB_PASSWORD string
 	DB_NAME     string
-	DB_SCHEMA   string
 }
 
 func (db *JsonObject) IsInOrder() bool {
-	return db.DB_NAME != "" && db.DB_USER != "" && db.DB_SCHEMA != "" && db.DB_PASSWORD != ""
+	return db.DB_NAME != "" && db.DB_USER != "" && db.DB_PASSWORD != ""
 }
 
 func ReadJsonFile(fileName string, context *routers.RouterContext) (JsonObject, error) {

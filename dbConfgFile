@@ -1,6 +1,5 @@
 {
     "DB_USER":"todo_manager",
     "DB_PASSWORD":"password",
-    "DB_NAME":"todo_management",
-    "DB_SCHEMA":"todo"
+    "DB_NAME":"todo_management"
 }
