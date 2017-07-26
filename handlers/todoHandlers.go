@@ -2,11 +2,8 @@ package handlers
 
 import (
 	"database/sql"
-	"os"
 	"net/http"
 	"io"
-	"todoApp/todoAppService/errorHandler"
-	"fmt"
 	"encoding/json"
 )
 
@@ -21,11 +18,11 @@ type TodoContent struct{
 	Finished bool
 }
 
-func GetAllTodo(db *sql.DB, loggingFile *os.File) http.HandlerFunc{
+func GetAllTodo(db *sql.DB) http.HandlerFunc{
 	return func(res http.ResponseWriter, req *http.Request) {
 		rows, err := db.Query(dbSelectQuery)
 		if err != nil {
-			errorHandler.ErrorHandler(loggingFile, err)
+			res.WriteHeader(http.StatusInternalServerError)
 		}
 
 		dbData := []TodoContent{}
@@ -36,8 +33,9 @@ func GetAllTodo(db *sql.DB, loggingFile *os.File) http.HandlerFunc{
 				dbData = append(dbData, r)
 			}
 		}
-		fmt.Println(dbData,"Here I am")
 		data,_ := json.Marshal(dbData)
+
+		res.WriteHeader(http.StatusOK)
 		res.Write(data)
 	}
 }

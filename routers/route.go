@@ -30,7 +30,6 @@ func registerRoutes(r *mux.Router, context *RouterContext) {
 }
 func getAPIRoutes(context *RouterContext) []Route {
 	db := context.Db
-	errorLogFile := context.ErrorLogFile
 
 	return []Route{
 		{
@@ -40,7 +39,7 @@ func getAPIRoutes(context *RouterContext) []Route {
 		},
 		{
 			Path: constants.GetAllTodoPath,
-			Handler: handlers.GetAllTodo(db, errorLogFile),
+			Handler: handlers.GetAllTodo(db),
 			Methods: []string {"GET"},
 		},
 	}
