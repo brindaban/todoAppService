@@ -1,0 +1,3 @@
+development:
+    driver: postgres
+    open: user=todo_manager dbname=todo_management password=password sslmode=disable host=localhost port=5432

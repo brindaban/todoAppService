@@ -1,6 +1,0 @@
-{
-    "DB_USER":"postgres_test",
-    "DB_PASSWORD":"postgres_test",
-    "DB_NAME":"todoManager_test",
-    "DB_SCHEMA":"todo_test"
-}

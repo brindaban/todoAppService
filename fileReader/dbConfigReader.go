@@ -3,8 +3,8 @@ package fileReader
 import (
 	"io/ioutil"
 	"encoding/json"
-	"todoApp/todoAppService/config"
 	"todoApp/todoAppService/errorHandler"
+	"todoApp/todoAppService/routers"
 )
 
 type JsonObject struct {
@@ -18,10 +18,10 @@ func (db *JsonObject) IsInOrder() bool {
 	return db.DB_NAME != "" && db.DB_USER != "" && db.DB_SCHEMA != "" && db.DB_PASSWORD != ""
 }
 
-func ReadJsonFile(fileName string, contextObject config.Context) (JsonObject, error) {
+func ReadJsonFile(fileName string, context *routers.RouterContext) (JsonObject, error) {
 	file, err := ioutil.ReadFile(fileName)
 	if err != nil {
-		errorHandler.ErrorHandler(contextObject.ErrorLogFile, err)
+		errorHandler.ErrorHandler(context.ErrorLogFile, err)
 		return JsonObject{}, err
 	}
 	var jsonType JsonObject

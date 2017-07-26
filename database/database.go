@@ -2,7 +2,7 @@ package database
 
 import (
 	"fmt"
-	"taskManagerServices/fileReaders"
+	"todoApp/todoAppService/fileReader"
 )
 
 const (
@@ -12,7 +12,7 @@ const (
 	DB_SCHEMA   = "tasks"
 )
 
-func CreateDbInfo(dbConfig fileReaders.JsonObject) string {
+func CreateDbInfo(dbConfig fileReader.JsonObject) string {
 	dbinfo := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=disable SEARCH_PATH=%s ",
 		DB_USER, DB_PASSWORD, DB_NAME, DB_SCHEMA)
 

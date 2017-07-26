@@ -1,17 +1,17 @@
-package app
+package main
 
 import (
 	"os"
 	"database/sql"
-	"todoApp/todoAppService/config"
 	"todoApp/todoAppService/fileReader"
 	"todoApp/todoAppService/database"
 	"todoApp/todoAppService/errorHandler"
 	"todoApp/todoAppService/routers"
+	_ "github.com/lib/pq"
 )
 
 func main()  {
-	context := config.Context{}
+	routerCtx := &routers.RouterContext{}
 	errorLogFilePath := "errorLog"
 	errorFile, err := os.OpenFile(errorLogFilePath, os.O_APPEND|os.O_WRONLY, 0600)
 	if err != nil {
@@ -19,33 +19,33 @@ func main()  {
 	}
 	defer errorFile.Close()
 
-	context.ErrorLogFile = errorFile
+	routerCtx.ErrorLogFile = errorFile
 
 	dbConfigFilePath := "dbConfgFile"
 
 	if len(os.Args) > 1 {
 		dbConfigFilePath = os.Args[1]
 	}
-	dbConfigDataJson,err := fileReader.ReadJsonFile(dbConfigFilePath,context)
+	dbConfigDataJson,err := fileReader.ReadJsonFile(dbConfigFilePath, routerCtx)
 	if err != nil {
 		os.Exit(1)
 	}
 	dbInfo := database.CreateDbInfo(dbConfigDataJson)
 
-	context.Db, err = sql.Open("postgres", dbInfo)
+	routerCtx.Db, err = sql.Open("postgres", dbInfo)
 
 	if err != nil {
-		errorHandler.ErrorHandler(context.ErrorLogFile,err)
+		errorHandler.ErrorHandler(routerCtx.ErrorLogFile,err)
 	}
 
-	context.Db.Ping()
+	routerCtx.Db.Ping()
 
 	if err != nil {
-		errorHandler.ErrorHandler(context.ErrorLogFile, err)
+		errorHandler.ErrorHandler(routerCtx.ErrorLogFile, err)
 	}
 
-	defer context.Db.Close()
+	defer routerCtx.Db.Close()
 
-	routers.HandleRequests(context)
+	routers.HandleRoutes(routerCtx)
 
 }

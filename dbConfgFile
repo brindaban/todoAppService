@@ -1,6 +1,6 @@
 {
-    "DB_USER":"postgres",
-    "DB_PASSWORD":"postgres",
-    "DB_NAME":"todoManager",
+    "DB_USER":"todo_manager",
+    "DB_PASSWORD":"password",
+    "DB_NAME":"todo_management",
     "DB_SCHEMA":"todo"
 }
