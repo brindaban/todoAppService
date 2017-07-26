@@ -1,16 +1,16 @@
 package main
 
 import (
-	"os"
 	"database/sql"
-	"todoApp/todoAppService/fileReader"
+	_ "github.com/lib/pq"
+	"os"
 	"todoApp/todoAppService/database"
 	"todoApp/todoAppService/errorHandler"
+	"todoApp/todoAppService/fileReader"
 	"todoApp/todoAppService/routers"
-	_ "github.com/lib/pq"
 )
 
-func main()  {
+func main() {
 	routerCtx := &routers.RouterContext{}
 	errorLogFilePath := "errorLog"
 	errorFile, err := os.OpenFile(errorLogFilePath, os.O_APPEND|os.O_WRONLY, 0600)
@@ -26,7 +26,7 @@ func main()  {
 	if len(os.Args) > 1 {
 		dbConfigFilePath = os.Args[1]
 	}
-	dbConfigDataJson,err := fileReader.ReadJsonFile(dbConfigFilePath, routerCtx)
+	dbConfigDataJson, err := fileReader.ReadJsonFile(dbConfigFilePath, routerCtx)
 	if err != nil {
 		os.Exit(1)
 	}
@@ -35,7 +35,7 @@ func main()  {
 	routerCtx.Db, err = sql.Open("postgres", dbInfo)
 
 	if err != nil {
-		errorHandler.ErrorHandler(routerCtx.ErrorLogFile,err)
+		errorHandler.ErrorHandler(routerCtx.ErrorLogFile, err)
 	}
 
 	routerCtx.Db.Ping()
