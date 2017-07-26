@@ -8,10 +8,11 @@ import (
 
 	"todoApp/todoAppService/handlers"
 	"github.com/stretchr/testify/assert"
-	"fmt"
+	"errors"
+	"bytes"
 )
 
-func TestGetAllTodo(t *testing.T) {
+func TestGetAllTodoSuccess(t *testing.T) {
 	db, mock, _ := sqlmock.New()
 
 	r, err := http.NewRequest("GET", "/api/todo", nil)
@@ -28,8 +29,43 @@ func TestGetAllTodo(t *testing.T) {
 
 	handlers.GetAllTodo(db)(w, r)
 	expected := "[{\"ID\":1,\"Description\":\"Description1\",\"Priority\":\"High\",\"Finished\":true},{\"ID\":1,\"Description\":\"Description2\",\"Priority\":\"Low\",\"Finished\":false}]"
-	fmt.Println(w.Body)
 	assert.Equal(t, http.StatusOK, w.Code)
 	assert.Equal(t, expected, w.Body.String())
+}
 
+func TestGetAllTodoFailsForDbError(t *testing.T) {
+	db, mock, _ := sqlmock.New()
+
+	r, err := http.NewRequest("GET", "/api/todo", nil)
+	assert.NoError(t, err, "failed to make a GET request")
+
+	w := httptest.NewRecorder()
+
+	mock.ExpectQuery("select id,description,priority,finished from tasks;").WillReturnError(errors.New("DB Error"))
+
+	handlers.GetAllTodo(db)(w, r)
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
+}
+
+func TestAddTodoSuccess(t *testing.T) {
+	db, mock, _ := sqlmock.New()
+
+	todo := []byte(`{
+						"Description" : "New Todo",
+						"Priority" : "HIGH" ,
+						"Finished" : true
+					}`)
+
+
+	r, err := http.NewRequest("POST", "/api/todo/new",bytes.NewBuffer(todo))
+
+	assert.NoError(t, err, "failed to make a GET request")
+
+	w := httptest.NewRecorder()
+
+	mock.ExpectExec("insert into tasks").
+		WithArgs("New Todo", "HIGH", true).WillReturnResult(sqlmock.NewResult(1,1))
+
+	handlers.AddTodo(db)(w, r)
+	assert.Equal(t, http.StatusCreated, w.Code)
 }

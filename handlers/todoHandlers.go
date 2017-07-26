@@ -3,12 +3,14 @@ package handlers
 import (
 	"database/sql"
 	"net/http"
-	"io"
 	"encoding/json"
+	"io/ioutil"
+	"fmt"
 )
 
 const (
 	dbSelectQuery string = "select id,description,priority,finished from tasks;"
+	dbInsertQuery string = "insert into tasks(description,priority,finished) VALUES($1,$2,$3);"
 )
 
 type TodoContent struct{
@@ -40,8 +42,27 @@ func GetAllTodo(db *sql.DB) http.HandlerFunc{
 	}
 }
 
-func ServeIndex() http.HandlerFunc {
+func AddTodo(db *sql.DB) http.HandlerFunc{
 	return func(res http.ResponseWriter, req *http.Request) {
-		io.WriteString(res, "hello, world!\n")
+		body,err := ioutil.ReadAll(req.Body)
+
+		if err != nil {
+			fmt.Println("Failed to know request body")
+			res.WriteHeader(http.StatusBadRequest)
+		}
+
+		var todoDTO TodoContent
+		err = json.Unmarshal(body, &todoDTO)
+		if err != nil {
+			fmt.Println("failed to unmarshal")
+		}
+
+		_,err = db.Exec(dbInsertQuery, todoDTO.Description, todoDTO.Priority, todoDTO.Finished)
+		if err != nil {
+			fmt.Println("Failed to insert todo",err)
+			res.WriteHeader(http.StatusInternalServerError)
+		}
+		res.WriteHeader(http.StatusCreated)
+
 	}
 }

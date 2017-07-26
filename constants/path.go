@@ -2,6 +2,6 @@ package constants
 
 const (
 	GetAllTodoPath = "/api/todo"
-	IndexPath = "/"
+	CreateTodoPath = "/api/todo/new"
 )
 

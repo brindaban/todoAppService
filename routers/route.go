@@ -33,14 +33,13 @@ func getAPIRoutes(context *RouterContext) []Route {
 
 	return []Route{
 		{
-			Path: constants.IndexPath,
-			Handler: handlers.ServeIndex(),
-			Methods: []string{"GET"},
-		},
-		{
 			Path: constants.GetAllTodoPath,
 			Handler: handlers.GetAllTodo(db),
 			Methods: []string {"GET"},
+		},{
+			Path: constants.CreateTodoPath,
+			Handler: handlers.AddTodo(db),
+			Methods: []string {"POST"},
 		},
 	}
 }
