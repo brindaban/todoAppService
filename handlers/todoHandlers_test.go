@@ -69,3 +69,68 @@ func TestAddTodoSuccess(t *testing.T) {
 	handlers.AddTodo(db)(w, r)
 	assert.Equal(t, http.StatusCreated, w.Code)
 }
+
+func TestDeleteTodoSuccess(t *testing.T) {
+	db, mock, _ := sqlmock.New()
+
+	r, err := http.NewRequest("DELETE", "/api/todo/1",nil)
+
+	assert.NoError(t, err, "failed to make a DELETE request")
+
+	w := httptest.NewRecorder()
+
+
+	mock.ExpectExec("delete from tasks").
+		WithArgs(1).
+		WillReturnResult(sqlmock.NewResult(1, 1))
+
+
+	handlers.DeleteTodo(db)(w, r)
+	assert.Equal(t, http.StatusAccepted, w.Code)
+}
+
+func TestDeleteTodoFailsForDBError(t *testing.T) {
+	db, mock, _ := sqlmock.New()
+
+
+	r, err := http.NewRequest("DELETE", "/api/todo/1",nil)
+
+	assert.NoError(t, err, "failed to make a DELETE request")
+
+	w := httptest.NewRecorder()
+
+
+	mock.ExpectExec("delete from tasks").
+		WithArgs(1).
+		WillReturnError(errors.New("DB error"))
+
+
+	handlers.DeleteTodo(db)(w, r)
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
+}
+
+func TestUpdateTodoSuccess(t *testing.T) {
+	db, mock, _ := sqlmock.New()
+
+	todo := []byte(`{
+						"Description" : "Change Todo",
+						"Priority" : "HIGH" ,
+						"Finished" : false
+					}`)
+
+
+	r, err := http.NewRequest("PATCH", "/api/todo/1",bytes.NewBuffer(todo))
+
+	assert.NoError(t, err, "failed to make a PATCH request")
+
+	w := httptest.NewRecorder()
+
+
+	mock.ExpectExec("update tasks set").
+		WithArgs("Change Todo", "HIGH", false, 1).
+		WillReturnResult(sqlmock.NewResult(1, 1))
+
+
+	handlers.UpdateTodo(db)(w, r)
+	assert.Equal(t, http.StatusCreated, w.Code)
+}

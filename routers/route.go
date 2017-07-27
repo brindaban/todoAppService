@@ -8,6 +8,7 @@ import (
 	"github.com/gorilla/mux"
 	"net/http"
 	"database/sql"
+	"fmt"
 )
 
 
@@ -36,11 +37,23 @@ func getAPIRoutes(context *RouterContext) []Route {
 			Path: constants.GetAllTodoPath,
 			Handler: handlers.GetAllTodo(db),
 			Methods: []string {"GET"},
-		},{
+		},
+		{
 			Path: constants.CreateTodoPath,
 			Handler: handlers.AddTodo(db),
 			Methods: []string {"POST"},
 		},
+		{
+			Path: constants.DeleteTodoPath,
+			Handler: handlers.DeleteTodo(db),
+			Methods: []string {"DELETE"},
+		},
+		{
+			Path: constants.UpdateTodoPath,
+			Handler: handlers.UpdateTodo(db),
+			Methods: []string {"PATCH"},
+		},
+
 	}
 }
 
@@ -53,5 +66,6 @@ func HandleRoutes(context *RouterContext) {
 		Addr:    ":8080", // Normally ":443"
 		Handler: r,
 	}
+	fmt.Println("Server starting at port",srv.Addr)
 	srv.ListenAndServe()
 }
